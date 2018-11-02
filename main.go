@@ -7,6 +7,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
+
+	"github.com/DropOrg/api/api"
 )
 
 const version = "0.1.0"
@@ -21,11 +23,12 @@ var opts config
 func initConfig() {
 	// Defaults
 	viper.SetDefault("db.addr", "mongodb://localhost:27017")
+	viper.SetDefault("port", "8000")
 	viper.RegisterAlias("DBAddr", "db.addr")
 	viper.SetDefault("env", "dev")
 
 	// Config File
-	configPaths := []string{"."}
+	configPaths := []string{".", "$HOME/.drop/", "/etc/drop/"}
 	for _, path := range configPaths {
 		viper.AddConfigPath(path)
 	}
@@ -58,13 +61,24 @@ func main() {
 	// Configuration
 	initConfig()
 
+	// Connect to mongo
+	// client, err := mongo.NewClient(viper.GetString("db.addr"))
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
 	r := mux.NewRouter()
 	r.HandleFunc("/", hello).
 		Methods("GET")
-	http.ListenAndServe(":8000", r)
+
+	api.UsersRoute(r.PathPrefix("/users"))
+	api.UserRoute(r.PathPrefix("/user"))
+
+	fmt.Printf("Listening on localhost:%d\n", viper.GetInt("port"))
+	http.ListenAndServe(fmt.Sprintf(":%d", viper.GetInt("port")), r)
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(viper.Get("db.addr"))
+
 	json.NewEncoder(w).Encode(r.Header)
 }
