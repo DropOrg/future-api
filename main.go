@@ -80,5 +80,5 @@ func main() {
 
 func hello(w http.ResponseWriter, r *http.Request) {
 
-	json.NewEncoder(w).Encode(r.Header)
+	json.NewEncoder(w).Encode(r.RequestURI)
 }

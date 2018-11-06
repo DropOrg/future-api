@@ -55,10 +55,10 @@ func UsersRoute(route *mux.Route) *mux.Router {
 // UserRoute creates and returns an instance of the router for all /user routes
 func UserRoute(route *mux.Route) *mux.Router {
 	r := route.Subrouter()
-	r.Path("/{user}").
-		Methods("GET").HandlerFunc(ReadUser).
-		Methods("PUT").HandlerFunc(CreateUser).
-		Methods("POST").HandlerFunc(UpdateUser).
-		Methods("DELETE").HandlerFunc(DeleteUser)
+	p := r.Path("/{user}")
+	p.Methods("GET").HandlerFunc(ReadUser)
+	p.Methods("PUT").HandlerFunc(CreateUser)
+	p.Methods("POST").HandlerFunc(UpdateUser)
+	p.Methods("DELETE").HandlerFunc(DeleteUser)
 	return r
 }
